@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -10,6 +11,7 @@ using Serilog.Events;
 using Serilog.Formatting.Display;
 using Serilog.Formatting.Json;
 
+[assembly: InternalsVisibleTo("Serilog.Sinks.Scalyr.Tests")]
 namespace Serilog.Sinks.Scalyr
 {
   internal class SystemTextJsonScalyrFormatter : IScalyrFormatter
@@ -26,7 +28,8 @@ namespace Serilog.Sinks.Scalyr
       _jsonSerializerSettings = new JsonSerializerOptions
       {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new MethodBaseConverter() }
       };
       _messageTemplateTextFormatter = messageTemplateTextFormatter;
       _session = new ScalyrSession { Token = token, Session = Guid.NewGuid().ToString("N") };
